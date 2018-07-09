@@ -29,6 +29,8 @@ import android.support.v4.content.res.ResourcesCompat
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import io.plaidapp.about.R
 import io.plaidapp.core.util.ViewUtils
 import io.plaidapp.core.R as coreR
@@ -102,14 +104,10 @@ class CutoutTextView(context: Context, attrs: AttributeSet) : View(context, attr
             }
         }
 
-        cutout = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
-            setHasAlpha(true)
-        }
-
         // this is the magic – Clear mode punches out the bitmap
         textPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
 
-        Canvas(cutout).apply {
+        cutout = createBitmap(width, height).applyCanvas {
             drawColor(foregroundColor)
             drawText(text, textX, textY, textPaint)
         }
