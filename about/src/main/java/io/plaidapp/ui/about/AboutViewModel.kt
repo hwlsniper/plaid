@@ -36,7 +36,7 @@ import io.plaidapp.R as appR
 /**
  * [AndroidViewModel] for the about module.
  */
-class AboutViewModel(
+internal class AboutViewModel(
         private val aboutStyler: AboutStyler,
         private val resources: Resources
 ) : ViewModel() {
@@ -47,49 +47,43 @@ class AboutViewModel(
     val navigationTarget: LiveData<Event<String>>
         get() = _navigationTarget
 
-    val appAboutText: CharSequence
-        get() {
-            return with(aboutStyler) {
-                // fun with spans & markdown
-                val about0 = getSpannableFromMarkdown(R.string.about_plaid_0,
-                        linksColor,
-                        highlightColor)
+    val appAboutText: CharSequence by lazy {
+        with(aboutStyler) {
+            // fun with spans & markdown
+            val about0 = getSpannableFromMarkdown(R.string.about_plaid_0,
+                    linksColor,
+                    highlightColor)
 
-                val about1 = SpannableString(resources.getString(R.string.about_plaid_1)).apply {
-                    setSpan(AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                            0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
-
-                val about2 = SpannableString(
-                        getSpannableFromMarkdown(R.string.about_plaid_2,
-                                linksColor, highlightColor)).apply {
-                    setSpan(AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                            0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
-                val about3 = SpannableString(
-                        getSpannableFromMarkdown(R.string.about_plaid_3,
-                                linksColor, highlightColor)).apply {
-                    setSpan(AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                            0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
-                "$about0\n\n$about1\n$about2\n\n$about3"
+            val about1 = SpannableString(resources.getString(R.string.about_plaid_1)).apply {
+                setSpan(AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                        0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
-        }
 
-    val iconAboutText: CharSequence
-        get() {
-            val icon0 = resources.getString(R.string.about_icon_0)
-            return with(aboutStyler) {
-            val icon1 = getSpannableFromMarkdown(R.string.about_icon_1, linksColor, highlightColor)
-            "$icon0\n$icon1"
+            val about2 = SpannableString(
+                    getSpannableFromMarkdown(R.string.about_plaid_2,
+                            linksColor, highlightColor)).apply {
+                setSpan(AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                        0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
+            val about3 = SpannableString(
+                    getSpannableFromMarkdown(R.string.about_plaid_3,
+                            linksColor, highlightColor)).apply {
+                setSpan(AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                        0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            "$about0\n\n$about1\n$about2\n\n$about3"
         }
-
-    internal fun onLibraryClick(library: Library) {
-        _navigationTarget.value = Event(library.link)
     }
 
-    internal val libraries = listOf(
+    val iconAboutText: CharSequence by lazy {
+        val icon0 = resources.getString(R.string.about_icon_0)
+        with(aboutStyler) {
+            val icon1 = getSpannableFromMarkdown(R.string.about_icon_1, linksColor, highlightColor)
+            "$icon0\n$icon1"
+        }
+    }
+
+    val libraries = listOf(
             Library("Android support libraries",
                     "The Android support libraries offer a number of features that are " +
                             "not built into the framework.",
@@ -122,6 +116,10 @@ class AboutViewModel(
                     "http://square.github.io/retrofit/",
                     "https://avatars.githubusercontent.com/u/82592",
                     false))
+
+    fun onLibraryClick(library: Library) {
+        _navigationTarget.value = Event(library.link)
+    }
 
     private fun getSpannableFromMarkdown(
             @StringRes stringId: Int,
